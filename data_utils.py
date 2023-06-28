@@ -1,8 +1,7 @@
+import albumentations
 from PIL import Image
 from tqdm.auto import tqdm 
 import glob, os, sys
-
-from sklearn.model_selection import train_test_split
 
 from settings import * 
 
