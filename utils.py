@@ -18,6 +18,9 @@ def torch2npy(tensor):
     npy = tensor.detach().cpu().numpy()
     return npy
 
+def ratio(src, dst):
+    return (dst - src) / src * 100
+
 
 def set_seed(seed=42):
     torch.manual_seed(seed)
