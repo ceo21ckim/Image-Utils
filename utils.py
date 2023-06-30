@@ -127,8 +127,15 @@ def plot_tsne(labels, embeds, fname='tsne.pdf', savefig=False):
     plt.close()
 
 
-def plot_scatter(anomaly_scores, fname, savefig=False):
-    colors = ['steelblue' if l == 0 else 'orangered' for l in labels]
-    markers = ['o' if l == 0 else ]
-    fig, ax = plt.subplots(figsize=(9, 6))
+def plot_scatter(labels, ab_score, fname='scatter.pdf', savefig=False):
+    an_idx = np.where(np.array(labels) == 1)[0]
+    n_idx = np.where(np.array(labels) == 0)[0]
     
+    fig, ax = plt.subplots(figsize=(9, 6))
+    ax.scatter(range(len(labels))[len(an_idx):], ab_score[n_idx], color=['steelblue']*len(norm_idx), marker='o')    
+    ax.scatter(range(len(labels))[:len(an_idx)], ab_score[an_idx], color=['darkorange']*len(abnorm_idx), marker='^')
+    
+    if savefig:
+        plt.savefig(fname, dpi=200)
+    
+    plt.show()
