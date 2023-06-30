@@ -3,7 +3,8 @@ import torchgeometry
 import numpy as np 
 
 from sklearn.metrics import roc_curve, auc 
-
+from sklearn.manifold import TSNE
+from sklearn.utils import shuffle
 
 import matplotlib.pyplot as plt 
 import matplotlib as mpl
@@ -16,19 +17,6 @@ def torch2npy(tensor):
         
     npy = tensor.detach().cpu().numpy()
     return npy
-
-
-def figure(img, reshape=(1, 2, 0), savefig=False, fname=None):
-    if isinstance(img, torch.Tensor):
-        img = torch2npy(img)
-    img = np.transpose(img, axes=reshape)
-    
-    plt.figure(figsize = (6, 6))
-    plt.imshow(img)
-    
-    if savefig:
-        plt.savefig(f'{fname}.pdf', dpi=100)
-    plt.show()
 
 
 def set_seed(seed=42):
@@ -66,7 +54,21 @@ def loss_ssim(preds, target):
 
 
 
-def segmap_figure(target, preds, norm=True, t=(1, 2, 0), save=None, path=None, alpha=0.5):
+## Associated Figure 
+
+def plot_imshow(img, reshape=(1, 2, 0), savefig=False, fname=None):
+    if isinstance(img, torch.Tensor):
+        img = torch2npy(img)
+    img = np.transpose(img, axes=reshape)
+    
+    plt.figure(figsize = (6, 6))
+    plt.imshow(img)
+    
+    if savefig:
+        plt.savefig(f'{fname}.pdf', dpi=100)
+    plt.show()
+
+def plot_segmap(target, preds, norm=True, t=(1, 2, 0), save=None, path=None, alpha=0.5):
     target = torch2npy(target, norm, t)
     preds = torch2npy(preds, norm, t)
     
@@ -84,3 +86,39 @@ def segmap_figure(target, preds, norm=True, t=(1, 2, 0), save=None, path=None, a
     if save:
         plt.savefig(path, dpi=200)
     plt.show()
+
+
+def plot_roc(labels, scores, filename, modelname="", save_plots=False):
+
+    fpr, tpr, _ = roc_curve(labels, scores)
+    roc_auc = auc(fpr, tpr)
+
+    #plot roc
+    if save_plots:
+        plt.figure()
+        lw = 2
+        plt.plot(fpr, tpr, color='darkorange',
+                lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title(f'Receiver operating characteristic {modelname}')
+        plt.legend(loc="lower right")
+        # plt.show()
+        plt.savefig(filename)
+        plt.close()
+
+    return roc_auc
+
+def plot_tsne(labels, embeds, filename):
+    tsne = TSNE(n_components=2, verbose=1, perplexity=30, n_iter=500)
+    embeds, labels = shuffle(embeds, labels)
+    tsne_results = tsne.fit_transform(embeds)
+    fig, ax = plt.subplots(1)
+    colormap = ["b", "r", "c", "y"]
+
+    ax.scatter(tsne_results[:,0], tsne_results[:,1], color=[colormap[l] for l in labels])
+    fig.savefig(filename)
+    plt.close()
