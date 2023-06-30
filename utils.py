@@ -95,22 +95,20 @@ def plot_roc(labels, scores, fname='roc.pdf', modelname="", savefig=False):
     fpr, tpr, _ = roc_curve(labels, scores)
     roc_auc = auc(fpr, tpr)
 
-    #plot roc
+    plt.figure()
+    lw = 2
+    plt.plot(fpr, tpr, color='darkorange',
+            lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title(f'Receiver operating characteristic {modelname}')
+    plt.legend(loc="lower right")
     if savefig:
-        plt.figure()
-        lw = 2
-        plt.plot(fpr, tpr, color='darkorange',
-                lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
-        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title(f'Receiver operating characteristic {modelname}')
-        plt.legend(loc="lower right")
-        if savefig:
-            plt.savefig(fname)
-        plt.close()
+        plt.savefig(fname)
+    plt.show()
 
     return roc_auc
 
