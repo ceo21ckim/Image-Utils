@@ -55,7 +55,6 @@ def loss_ssim(preds, target):
 
 
 ## Associated Figure 
-
 def plot_imshow(img, reshape=(1, 2, 0), fname='img.pdf', savefig=False):
     if isinstance(img, torch.Tensor):
         img = torch2npy(img)
@@ -126,4 +125,7 @@ def plot_tsne(labels, embeds, fname='tsne.pdf', savefig=False):
 
 
 def plot_scatter(anomaly_scores, fname, savefig=False):
+    colors = ['steelblue' if l == 0 else 'orangered' for l in labels]
+    markers = ['o' if l == 0 else ]
+    fig, ax = plt.subplots(figsize=(9, 6))
     
