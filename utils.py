@@ -56,7 +56,7 @@ def loss_ssim(preds, target):
 
 ## Associated Figure 
 
-def plot_imshow(img, reshape=(1, 2, 0), savefig=False, fname=None):
+def plot_imshow(img, reshape=(1, 2, 0), fname='img.pdf', savefig=False):
     if isinstance(img, torch.Tensor):
         img = torch2npy(img)
     img = np.transpose(img, axes=reshape)
@@ -68,7 +68,7 @@ def plot_imshow(img, reshape=(1, 2, 0), savefig=False, fname=None):
         plt.savefig(f'{fname}.pdf', dpi=100)
     plt.show()
 
-def plot_segmap(target, preds, norm=True, t=(1, 2, 0), save=None, path=None, alpha=0.5):
+def plot_segmap(target, preds, norm=True, t=(1, 2, 0), fname='segmap.pdf', savefig=False, alpha=0.5):
     target = torch2npy(target, norm, t)
     preds = torch2npy(preds, norm, t)
     
@@ -83,18 +83,18 @@ def plot_segmap(target, preds, norm=True, t=(1, 2, 0), save=None, path=None, alp
     plt.imshow(target)
     plt.imshow(preds, cmap=cmap, alpha=alpha)
     
-    if save:
-        plt.savefig(path, dpi=200)
+    if savefig:
+        plt.savefig(fname, dpi=200)
     plt.show()
 
 
-def plot_roc(labels, scores, filename, modelname="", save_plots=False):
+def plot_roc(labels, scores, fname='roc.pdf', modelname="", savefig=False):
 
     fpr, tpr, _ = roc_curve(labels, scores)
     roc_auc = auc(fpr, tpr)
 
     #plot roc
-    if save_plots:
+    if savefig:
         plt.figure()
         lw = 2
         plt.plot(fpr, tpr, color='darkorange',
@@ -106,13 +106,13 @@ def plot_roc(labels, scores, filename, modelname="", save_plots=False):
         plt.ylabel('True Positive Rate')
         plt.title(f'Receiver operating characteristic {modelname}')
         plt.legend(loc="lower right")
-        # plt.show()
-        plt.savefig(filename)
+        if savefig:
+            plt.savefig(fname)
         plt.close()
 
     return roc_auc
 
-def plot_tsne(labels, embeds, filename):
+def plot_tsne(labels, embeds, fname='tsne.pdf', savefig=False):
     tsne = TSNE(n_components=2, verbose=1, perplexity=30, n_iter=500)
     embeds, labels = shuffle(embeds, labels)
     tsne_results = tsne.fit_transform(embeds)
@@ -120,5 +120,10 @@ def plot_tsne(labels, embeds, filename):
     colormap = ["b", "r", "c", "y"]
 
     ax.scatter(tsne_results[:,0], tsne_results[:,1], color=[colormap[l] for l in labels])
-    fig.savefig(filename)
+    if savefig:
+        fig.savefig(fname)
     plt.close()
+
+
+def plot_scatter(anomaly_scores, fname, savefig=False):
+    
