@@ -41,7 +41,7 @@ def scaler(x):
         _min = torch.min(x)
         _max = torch.max(x)
         
-    elif isinstance(x, np.array):
+    elif isinstance(x, np.ndarray):
         _min = np.min(x)
         _max = np.max(x)
 
