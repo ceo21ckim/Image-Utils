@@ -2,6 +2,10 @@ import torch
 import torchgeometry
 import numpy as np 
 
+from PIL import Image
+
+import random
+
 from sklearn.metrics import roc_curve, auc 
 from sklearn.manifold import TSNE
 from sklearn.utils import shuffle
@@ -10,6 +14,33 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import matplotlib.colors as mcl
 import matplotlib.cm as cm
+
+
+### Data Augmentation
+
+def ShearX(img, magnitude):
+    return img.transform(
+        img.size, 
+        Image.AFFINE, 
+        (1, magnitude * random.choice([-1, 1]), 0, 0, 1, 0), 
+        Image.BICUBIC, 
+        fillcolor=FILLCOLOR,
+    )
+
+def TranslateX(img, magnitude):
+    return img.transform(
+        img.size, 
+        Image.AFFINE, 
+        (1, 0, magnitude * img.size[0] * random.choice([-1, 1]), 0, 1, 0), 
+        fillcolor=FILLCOLOR,
+    )
+
+def Rorate(img, magnitude):
+    rot = img.convert('RGBA').rotate(magnitude)
+    return Image.composite(
+        rot, Image.new('RGBA', rot.size, FILLCOLOR_RGBA), rot).convert(img.mode)
+
+
 
 def torch2npy(tensor):
     if len(tensor.shape) == 4:
@@ -54,7 +85,6 @@ def loss_ssim(preds, target):
     x_ssim = ssim(preds, target)
     
     return x_ssim
-
 
 
 ## Associated Figure 
