@@ -3,6 +3,7 @@ import torchgeometry
 import numpy as np 
 
 from PIL import Image
+import PIL
 
 import random
 
@@ -40,6 +41,27 @@ def Rorate(img, magnitude):
     return Image.composite(
         rot, Image.new('RGBA', rot.size, FILLCOLOR_RGBA), rot).convert(img.mode)
 
+def Invert(img):
+    return PIL.ImageOps.invert(img)
+
+def Equalize(img):
+    return PIL.ImageOps.equalize(img)
+
+def AutoContrast(img):
+    return PIL.ImageOps.autocontrast(img)
+    
+def Posterize(img, magnitude):
+    return PIL.ImageOps.posterize(img, magnitude)
+
+def Cutout(img, magnitude):
+    if magnitude == 0.0:
+        return img 
+    w, h = img.size 
+    xy = get_rand_bbox_coord(w, h, magnitude)
+
+    img = img.copy()
+    PIL.ImageDraw.Draw(img).rectangle(xy, fill=FILLCOLOR)
+    return img
 
 
 def torch2npy(tensor):
